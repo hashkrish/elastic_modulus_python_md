@@ -21,6 +21,7 @@
   <ItemGroup>
     <Content Include="grid.ipynb" />
     <Content Include="main_jupyter.ipynb" />
+    <Content Include="md_nve.c" />
     <Content Include="V0.0.ipynb" />
     <Content Include="youngs_modulus_python.ipynb" />
   </ItemGroup>
