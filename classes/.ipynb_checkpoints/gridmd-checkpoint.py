@@ -1,14 +1,14 @@
 
 # coding: utf-8
-
+from .constantsmd import *
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.animation as animation
 import time
-import sympy as sy
+#import sympy as sy
 #sy.init_printing()
-
+print("called gridmd")
 
 def __init__():
     #initializaztion

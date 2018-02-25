@@ -2,12 +2,13 @@
 
 
 #importing required libraries
-from datetime import datetime
-startTime = datetime.now()
+#from datetime import datetime
+#startTime = datetime.now()
 print("-----------start-----------")
 
 from classes import gridmd, functionsmd
-from numpy import sin, cos, deg2rad, matrix, size, invert, multiply, array, empty, zeros, ones
+from classes import constantsmd
+#from numpy import sin, cos, deg2rad, matrix, size, invert, multiply, array, empty, zeros, ones
 
 #from matplotlib.pyplot import plot
 #import matplotlib.pyplot as plt
@@ -17,13 +18,13 @@ from numpy import sin, cos, deg2rad, matrix, size, invert, multiply, array, empt
 #import pandas as pd
 
 
-ial = 1.02e-10 #interatomic length
+
 
 N = gridmd.N_xyz(100,6,6)
 coor_0 = gridmd.initialPos(N,ial)
 xyz_grid = gridmd.xyz_grid(coor_0[0], coor_0[1], coor_0[2])
 
-
+print(constantsmd.ial)
 
 
 

@@ -26,6 +26,7 @@
     <Content Include="youngs_modulus_python.ipynb" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="classes\constantsmd.py" />
     <Compile Include="classes\functionsmd.py" />
     <Compile Include="classes\gridmd.py" />
     <Compile Include="classes\__init__.py">
