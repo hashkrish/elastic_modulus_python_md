@@ -1,6 +1,6 @@
 import configparser
 import ast
-
+from .gridmd import *
 
 avagadro = 6.023e23
 ial = 4.04e-10 #interatomic length
@@ -11,6 +11,10 @@ acc = 1e-10 #acceleration
 ts = 5e-9 #timestep ex: 0.005 nano seconds as 0.005e-9
 N_steps = 10
 Fa = 1.73e-9
+mass = 26.982e-3/avagadro
+FaByMass = Fa/mass
+
+N = N_xyz(10,4,4)
 """
 
 config=configparser.ConfigParser()

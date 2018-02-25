@@ -1,6 +1,7 @@
 
 # coding: utf-8
 from .constantsmd import *
+from .gridmd import *
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -14,7 +15,7 @@ def __init__():
     #initializaztion
     pass
 
-def xyz_grid(x,y,z):
+def xyzGrid(x,y,z):
     x_y_z = np.empty([x.size,y.size,z.size,3])
 
     for i in range(x.size):
