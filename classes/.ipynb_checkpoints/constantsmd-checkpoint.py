@@ -2,14 +2,15 @@ import configparser
 import ast
 
 
-avagadro = 6.023e-23
-ial = 1.02e-10 #interatomic length
+avagadro = 6.023e23
+ial = 4.04e-10 #interatomic length
 epsilon = 0.5* 1.6e-19 #1.5 #dummy value
 sigma = 2.85e-10 #dummy value
 vel = 0.1e-10 #velocity per step
 acc = 1e-10 #acceleration
 ts = 5e-9 #timestep ex: 0.005 nano seconds as 0.005e-9
 N_steps = 10
+Fa = 1.73e-9
 """
 
 config=configparser.ConfigParser()
