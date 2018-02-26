@@ -12,7 +12,7 @@ ts = 0.5e-9 #timestep ex: 0.005 nano seconds as 0.005e-9
 N_steps = 10
 Fa = 0
 
-N = N_xyz(100,10,10)
+N = N_xyz(3,3,3)
 
 mass = 26.982e-3/avagadro
 FaByMass = Fa/mass
