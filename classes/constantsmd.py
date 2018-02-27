@@ -11,9 +11,9 @@ acc = 1e-10 #acceleration
 ts = 0.005e-9 #timestep ex: 0.005 nano seconds as 0.005e-9
 N_steps = 10
 
-N = N_xyz(10,3,3)
+N = N_xyz(3,3,3)
 
-Fa = 0#100 * (N[1]*N[2]*ial**2)
+Fa = 0 #100 * (N[1]*N[2]*ial**2)
 
 
 

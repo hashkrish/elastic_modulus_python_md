@@ -13,7 +13,8 @@ from classes.constantsmd import *
 from classes.gridmd import *
 from classes.functionsmd import *
 from numpy import sin, cos, deg2rad, matrix, size, invert, multiply, array, sqrt, ones, empty, sum, average, abs, log
-from matplotlib.pyplot import plot, scatter, loglog, show
+from matplotlib.pyplot import plot, scatter, loglog
+
 
 #import matplotlib.pyplot as plt
 #from sympy import init_printing
@@ -29,6 +30,12 @@ print("-----------start-----------")
 #N = N_xyz(10,6,6)
 coor_0 = initialPos(N,ial)
 xyz_grid = xyzGrid(coor_0[0], coor_0[1], coor_0[2])
+
+
+# In[16]:
+
+
+N
 
 
 # In[3]:
@@ -68,20 +75,19 @@ for t in range(N_steps):
 
 # In[17]:
 
-"""
-for time in range(10):
-	print(time)
-	fig = plt.figure()
-	ax = fig.add_subplot(111, projection='3d')
-	for i in time_grid[time,:,0,0,0]:
-		for j in time_grid[time,0,:,0,1]:
-			for k in time_grid[time,0,0,:,2]:
-				ax.scatter(i,j,k,c='b')
-	ax.set_xlabel('X Label')
-	ax.set_ylabel('Y Label')
-	ax.set_zlabel('Z Label')
-	plt.show()
-"""
+
+for time in range(N_steps):
+    fig0 = plt.figure()
+    ax = fig0.add_subplot(111, projection='3d')
+    for i in time_grid[time,:,0,0,0]:
+        for j in time_grid[time,0,:,0,1]:
+            for k in time_grid[time,0,0,:,2]:
+                ax.scatter(i,j,k)
+    ax.set_xlabel('X Label')
+    ax.set_ylabel('Y Label')
+    ax.set_zlabel('Z Label')
+    plt.show()
+
 
 # In[6]:
 
@@ -112,7 +118,7 @@ time_forceMean, time_stress = timeForceMeanAndTimeStress()
 # In[8]:
 
 
-time_stress
+time_stress[:,0]
 
 
 # In[9]:
@@ -125,7 +131,7 @@ for t in range(N_steps):
     if t==0:
         pass #strainX[t] = 0
     else:
-        strainXYZ = (time_grid[t]-time_grid[0])/ial
+        strainXYZ = abs(time_grid[t]-time_grid[0])/ial
         time_strainXYZ[t] = strainXYZ
 
 
@@ -157,14 +163,13 @@ def timeStrainMean():
 
 
 time_strainMean = timeStrainMean()
-print(time_strainMean[:,0], time_strainMean)
+print(time_strainMean)
 
 
 # In[13]:
 
 
-plot(time_stress, time_strainMean)
-show()
+plot(time_strainMean, time_stress)
 
 
 # In[14]:
@@ -186,7 +191,7 @@ winsound.Beep(freq, duration)
 os.system('spd-say "your program is finished"')"""
 
 
-# In[16]:
+# In[ ]:
 
 
 print("------------end------------")
