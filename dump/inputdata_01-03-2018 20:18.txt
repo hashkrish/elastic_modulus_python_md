@@ -1,0 +1,1 @@
+avagadro : 6.023e+23ial : 4.04e-10epsilon : 8e-20sigma : 2.85e-10timestep : 5e-14N_steps : 100N : [3 3 3]Fa : 0mass : 4.4798273285738e-26FaByMass : 0.0

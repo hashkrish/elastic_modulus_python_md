@@ -1,0 +1,11 @@
+datetime : 01-03-2018 21:26
+avagadro : 6.023e+23
+ial : 4.04e-10
+epsilon : 8e-20
+sigma : 2.85e-10
+timestep : 5e-14
+N_steps : 20
+N : [2 2 2]
+Fa : 0
+mass : 4.4798273285738e-26
+FaByMass : 0.0

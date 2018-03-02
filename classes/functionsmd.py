@@ -12,10 +12,10 @@ def timetaken(startTime):
 def forceLJ(r, x1, x2):
     f=sigma/r
     Fxij = 24*epsilon*f**6*(2*f**6 - 1)/r*(x1-x2)/r
-    return Fxij/avagadro
+    return Fxij#/avagadro
 
 def LJ(r):
-    return 4*epsilon*( (sigma/r)**12 - (sigma/r)**6 ) / avagadro
+    return 4*epsilon*( (sigma/r)**12 - (sigma/r)**6 ) 
 
 def verlet_pos(pos,t,ts,acc):
 #    pos_t_plus_dt = pos + vel*ts + ( 0.5 * acc * ts**2 ); pos = pos_t_plus_dt
