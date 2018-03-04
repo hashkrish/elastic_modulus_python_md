@@ -1,6 +1,6 @@
-import configparser
+#import configparser
 import ast
-from .gridmd import *
+from .gridmd import N_xyz
 
 avagadro = 6.023e23
 ial = 4.04e-10 # 3.84e-10 #interatomic length

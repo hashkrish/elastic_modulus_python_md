@@ -99,14 +99,14 @@ def forceYLJ3(x, y, z, xyz_grid):#Force along x-axis
                 if (ri==0 and rj==0 and rk==0):
                     pass
                 else:
-                    i=ri;j=rj;k=rk;check=1;checki=1;checkj=1;checkk=1;
+                    i=ri;j=rj;k=rk;check=1;#checki=1;checkj=1;checkk=1;
                     
                     if(x+ri<0 or x+ri>=N[0]):
-                        i=0;check=0;checki=0;
+                        i=0;check=0;#checki=0;
                     if(y+rj<0 or y+rj>=N[1]):
-                        j=0;check=0;checkj=0;
+                        j=0;check=0;#checkj=0;
                     if(z+rk<0 or z+rk>=N[2]):
-                        k=0;check=0;checkk=0;
+                        k=0;check=0;#checkk=0;
                     if(check==1):
                         #print(ri,rj,rk)
                         #print(r(x,y,z,x+i,y+j,z+k))
