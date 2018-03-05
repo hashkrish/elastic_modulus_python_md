@@ -17,10 +17,10 @@ def forceLJ(r, x1, x2):
 def LJ(r):
     return 4*epsilon*( (sigma/r)**12 - (sigma/r)**6 ) 
 
-def verlet_pos(pos,t,ts,acc):
+def verlet_pos(pos, posPrevious, t, ts, acc):
+    pos_t_dt = 2*pos - posPrevious + (acc*ts**2); pos = pos_t_dt
 #    pos_t_plus_dt = pos + vel*ts + ( 0.5 * acc * ts**2 ); pos = pos_t_plus_dt
 #    pos_t_minus_dt = pos - vel*ts + ( 0.5 * acc * ts**2 ); pos = pos_t_minus_dt
-    pos_t_dt = 2*pos - (pos*(t-ts)) + (acc*ts**2); pos = pos_t_dt
 # the above given post_t_dt is found by adding above given two taylor equations
     return pos
 
@@ -144,3 +144,32 @@ def forceZLJ3(x, y, z, xyz_grid):#Force along x-axis
     #print("potential: ", pot)
     #print("force along z: ", fz)
     return fz
+def numberOfAtoms(latticeGrid):
+    c=0
+    for i in range(latticeGrid[:,0,0].size):
+        for j in range(latticeGrid[0,:,0].size):
+            for k in range(latticeGrid[0, 0, :].size):
+                if(latticeGrid[i, j, k] == 1):
+                    c+=1
+    return c
+
+def writeXYZFile(latticeGrid, posGrid, name='None'):
+    if name == 'None':
+        file = open("pos.xyz", "w")
+    else:
+        file = open(name, "w")
+    file.write(str(numberOfAtoms(latticeGrid))
+                + '\n')
+    file.write('[ FCC ]\n')
+    c=1
+    for i in range(posGrid.shape[0]):
+        for j in range(posGrid.shape[1]):
+            for k in range(posGrid.shape[2]):
+                if(latticeGrid[i, j, k] == 1):
+                    file.write('atom' + str(c) + ' ' 
+                                + str(posGrid[i, j, k, 0]) + ' '  
+                                + str(posGrid[i, j, k, 1]) + ' ' 
+                                + str(posGrid[i, j, k, 2]) + ' ' 
+                                + '\n')
+                    c += 1
+                    

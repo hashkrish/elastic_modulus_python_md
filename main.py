@@ -127,7 +127,7 @@ def timeForceMeanAndTimeStress():
                     fxMean+=force_grid[t][i][j][k][0]
                     fyMean+=force_grid[t][i][j][k][1]
                     fzMean+=force_grid[t][i][j][k][2]
-        fxMean = fxMean/N[0];fyMean = fyMean/N[1];fzMean = fzMean/N[2];
+        fxMean = fxMean/N[0];fyMean = fyMean/N[1];fzMean = fzMean/N[2]
         time_stress[t] = np.array([fxMean/(N[1]*N[2]*ial**2), fyMean/(N[2]*N[0]*ial**2), fzMean/(N[1]*N[0]*ial**2)])
         time_forceMean[t] = np.array([fxMean, fyMean, fzMean])
         time_stress_applied[t,0] = np.array([Fa/( abs(time_grid[t,0,0,0,1] - time_grid[t,0,N[1]-1,0,1]) * abs(time_grid[t,0,0,0,2] - time_grid[t,0,0,N[2]-1,2]))])
@@ -171,7 +171,7 @@ for t in range(N_steps):
 
 def timeStrainMean():
     time_strainMean = np.zeros([N_steps, 3])
-    StrainXMean = 0;StrainYMean = 0;StrainZMean = 0;
+    StrainXMean = 0;StrainYMean = 0;StrainZMean = 0
     for t in range(N_steps):
         for i in range(N[0]):
             for j in range(N[1]):
@@ -179,7 +179,7 @@ def timeStrainMean():
                     StrainXMean+=time_strainXYZ[t][i][j][k][0]
                     StrainYMean+=time_strainXYZ[t][i][j][k][1]
                     StrainZMean+=time_strainXYZ[t][i][j][k][2]
-        StrainXMean = StrainXMean/N[0];StrainYMean = StrainYMean/N[1];StrainZMean = StrainZMean/N[2];
+        StrainXMean = StrainXMean/N[0];StrainYMean = StrainYMean/N[1];StrainZMean = StrainZMean/N[2]
         time_strainMean[t] = np.array([StrainXMean, StrainYMean, StrainZMean])
     return time_strainMean
 
