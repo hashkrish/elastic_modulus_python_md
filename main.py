@@ -1,10 +1,11 @@
 
 # coding: utf-8
 
+# # Determining Elastic Modulus using MD Analysis
+
+# ## Importing Libraries
+
 # In[1]:
-
-
-#this is the main file
 
 
 #importing required libraries
@@ -22,6 +23,8 @@ import datetime
 #import pandas as pd
 print("-----------start-----------")
 
+
+# ## Writing Log
 
 # In[2]:
 
@@ -51,7 +54,7 @@ coor_0 = initialPosSC(N,ial)
 xyz_grid = xyzGrid(coor_0[0], coor_0[1], coor_0[2])
 
 
-# In[ ]:
+# In[4]:
 
 
 time_grid = np.zeros([N_steps,N[0],N[1],N[2],3])
@@ -60,7 +63,7 @@ time_grid[0] = np.array([xyz_grid])
 force_grid = np.zeros([N_steps, N[0], N[1], N[2],3])
 
 
-# In[ ]:
+# In[5]:
 
 
 #%%timeit
@@ -71,10 +74,13 @@ for j in array(range(N[1])):
         force_grid[0, N[0]-1, j, k, 0] = Fa / (N[1] * N[2])
 
 
-# In[ ]:
+# In[6]:
 
 
-for t in range(N_steps - 1):
+for t in range(0, N_steps-1):
+    file = open("dump/pos/timestep_"+str(t+1)+".xyz", "w")
+    file.write(str(N[0]*N[1]*N[2])+'\n')
+    file.write('\n')
     for i in range(N[0]):
         for j in range(N[1]):
             for k in range(N[2]):
@@ -84,42 +90,50 @@ for t in range(N_steps - 1):
                 fz = forceZLJ3(i, j, k, xyz_grid)
                 #fx, fy, fz += forceLJ3(i, j, k, xyz_grid)
                 acc = (fx/mass) + (force_grid[t, i, j, k , 0]/mass)
-                xj=verlet_pos(time_grid[t][i][j][k][0],t,ts,acc)
-                yj=verlet_pos(time_grid[t][i][j][k][1], t, ts, 
-                              fy/mass)
-                zj=verlet_pos(time_grid[t][i][j][k][2], t, ts, 
-                              fz/mass)
+                if (t-1==-1):
+                    xj=verlet_pos(time_grid[t][i][j][k][0], time_grid[t][i][j][k][0], t,ts,acc)
+                    yj=verlet_pos(time_grid[t][i][j][k][1], time_grid[t][i][j][k][1], t, ts, 
+                                      fy/mass)
+                    zj=verlet_pos(time_grid[t][i][j][k][2], time_grid[t][i][j][k][2], t, ts, 
+                                      fz/mass)
+                else:
+                    xj=verlet_pos(time_grid[t][i][j][k][0], time_grid[t-1][i][j][k][0], t,ts,acc)
+                    yj=verlet_pos(time_grid[t][i][j][k][1], time_grid[t-1][i][j][k][1], t, ts, 
+                                  fy/mass)
+                    zj=verlet_pos(time_grid[t][i][j][k][2], time_grid[t-1][i][j][k][2], t, ts, 
+                                  fz/mass)
                 time_grid[t+1][i][j][k][0] = xj
                 time_grid[t+1][i][j][k][1] = yj
                 time_grid[t+1][i][j][k][2] = zj
-                
+                file.write('X '+str(xj)+' '+str(yj)+' '+str(zj)+'\n')
                 force_grid[t][i][j][k][0] = fx;force_grid[t][i][j][k][1] = fy;force_grid[t][i][j][k][2] = fz
+    file.close()
 
 
-# In[ ]:
+# In[7]:
 
 
-# for time in range(N_steps):
-#     fig0 = plt.figure()
-#     ax = fig0.add_subplot(111, projection='3d')
-#     for i in time_grid[time,:,0,0,0]:
-#         for j in time_grid[time,0,:,0,1]:
-#             for k in time_grid[time,0,0,:,2]:
-#                 ax.scatter(i,j,k)
-#     ax.set_xlabel('X')
-#     ax.set_ylabel('Y')
-#     ax.set_zlabel('Z')
-#     plt.show()
+for time in range(N_steps):
+    fig0 = plt.figure()
+    ax = fig0.add_subplot(111, projection='3d')
+    for i in time_grid[time,:,0,0,0]:
+        for j in time_grid[time,0,:,0,1]:
+            for k in time_grid[time,0,0,:,2]:
+                ax.scatter(i,j,k)
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
+    plt.show()
 
 
-# In[ ]:
+# In[8]:
 
 
 def timeForceMeanAndTimeStress():
     time_forceMean = np.zeros([N_steps, 3])
     time_stress = np.zeros([N_steps, 3])
     time_stress_applied = np.zeros([N_steps, 3])
-    fxMean = 0;fyMean = 0;fzMean = 0
+    fxMean = 0;fyMean = 0;fzMean = 0;
     for t in range(N_steps):
         for i in range(N[0]):
             for j in range(N[1]):
@@ -127,26 +141,26 @@ def timeForceMeanAndTimeStress():
                     fxMean+=force_grid[t][i][j][k][0]
                     fyMean+=force_grid[t][i][j][k][1]
                     fzMean+=force_grid[t][i][j][k][2]
-        fxMean = fxMean/N[0];fyMean = fyMean/N[1];fzMean = fzMean/N[2]
-        time_stress[t] = np.array([fxMean/(N[1]*N[2]*ial**2), fyMean/(N[2]*N[0]*ial**2), fzMean/(N[1]*N[0]*ial**2)])
+        fxMean = fxMean/N[0];fyMean = fyMean/N[1];fzMean = fzMean/N[2];
+        time_stress[t] = np.array([fxMean/(N[1]*N[2]*ial**2), fyMean/(N[2]*N[0]*ial**2), fzMean/(N[1]*N[0]*ial**2)])#*68
         time_forceMean[t] = np.array([fxMean, fyMean, fzMean])
         time_stress_applied[t,0] = np.array([Fa/( abs(time_grid[t,0,0,0,1] - time_grid[t,0,N[1]-1,0,1]) * abs(time_grid[t,0,0,0,2] - time_grid[t,0,0,N[2]-1,2]))])
     return time_forceMean, time_stress, time_stress_applied
 
 
-# In[ ]:
+# In[9]:
 
 
 time_forceMean, time_stress, time_stress_applied = timeForceMeanAndTimeStress()
 
 
-# In[ ]:
+# In[10]:
 
 
 time_stress[:,0]
 
 
-# In[ ]:
+# In[11]:
 
 
 strainXYZ = np.zeros([N[0], N[1], N[2], 3])
@@ -160,18 +174,18 @@ for t in range(N_steps):
         time_strainXYZ[t] = strainXYZ
 
 
-# In[ ]:
+# In[12]:
 
 
 #time_strainMean = np.zeros([N_steps, 3])
 
 
-# In[ ]:
+# In[13]:
 
 
 def timeStrainMean():
     time_strainMean = np.zeros([N_steps, 3])
-    StrainXMean = 0;StrainYMean = 0;StrainZMean = 0
+    StrainXMean = 0;StrainYMean = 0;StrainZMean = 0;
     for t in range(N_steps):
         for i in range(N[0]):
             for j in range(N[1]):
@@ -179,44 +193,44 @@ def timeStrainMean():
                     StrainXMean+=time_strainXYZ[t][i][j][k][0]
                     StrainYMean+=time_strainXYZ[t][i][j][k][1]
                     StrainZMean+=time_strainXYZ[t][i][j][k][2]
-        StrainXMean = StrainXMean/N[0];StrainYMean = StrainYMean/N[1];StrainZMean = StrainZMean/N[2]
+        StrainXMean = StrainXMean/N[0];StrainYMean = StrainYMean/N[1];StrainZMean = StrainZMean/N[2];
         time_strainMean[t] = np.array([StrainXMean, StrainYMean, StrainZMean])
     return time_strainMean
 
 
-# In[ ]:
+# In[14]:
 
 
 time_strainMean = timeStrainMean()
 plot(range(N_steps) ,time_strainMean[:,0])
 
 
-# In[ ]:
+# In[15]:
 
 
 plot(range(N_steps) ,time_stress[:,0])
 
 
-# In[ ]:
+# In[16]:
 
 
-n=8
+n=25
 #fig, axs = plt.subplot(1,2)
 
 plot(time_strainMean[:n,0], time_stress[:n,0])
 plt.show()
-scatter(time_strainMean[:n,0], time_stress[:n,0]/1e-14)
+scatter(time_strainMean[:n,0], time_stress[:n,0])#/1e-14)
 plt.show()
 
 
-# In[ ]:
+# In[17]:
 
 
 for i in range(N_steps):
     print( (time_stress[i][0]/time_strainMean[i][0])/1e9,"GPa")
 
 
-# In[ ]:
+# In[18]:
 
 
 n=5
@@ -228,7 +242,7 @@ scatter(time_strainMean[:n,0], time_stress_applied[:n,0]/1e-14)
 plt.show()
 
 
-# In[ ]:
+# In[19]:
 
 
 import platform
@@ -243,13 +257,13 @@ if(platform.system()=='Linux'):
     os.system('spd-say "your program is finished"')
 
 
-# In[ ]:
+# In[20]:
 
 
 print("------------end------------")
 
 
-# In[ ]:
+# In[21]:
 
 
 time_strainMean
