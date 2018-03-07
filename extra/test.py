@@ -17,7 +17,6 @@ from classes.gridmd import (N_steps, makeLattice, makeLatticePos, plotPosGrid,
 
 
 
-
 brick = np.array([
     [
         [1, 0, 1],
