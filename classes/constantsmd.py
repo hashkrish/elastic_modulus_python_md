@@ -17,7 +17,7 @@ def N_xyz_(Nx,Ny,Nz):
     return np.array([Nx,Ny,Nz])
 
 
-N = N_xyz_(10,3,3)
+N = N_xyz_(3,3,3)
 
 Fa = 100e6 * (N[1]*N[2]*ial**2)
 
