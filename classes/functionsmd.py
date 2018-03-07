@@ -28,7 +28,7 @@ def verlet_acc(pos,t,ts,posPlusDt):
     return (posPlusDt - 2*pos + pos*(t-ts))/ts**2
 
 def forceLJ3(x, y, z, xyz_grid):#Force along x-axis
-    rg = np.array([-1,0,1])
+    rg = np.array([-1, 0 , 1])
     pot = 0
     fx = 0;fy=0;fz=0;
     for ri in rg:
@@ -58,12 +58,54 @@ def forceLJ3(x, y, z, xyz_grid):#Force along x-axis
     #print("force along x: ", fx)
     return np.array([fx,fy,fz])
 
+def forceLJ3FCC(x, y, z, xyz_grid, latticeGrid):#Force along x-axis
+    rg = np.array([-1, 0, 1])
+    #rg = np.array([-3, -2, -1, 0 , 1, 2, 3])
+    pot = 0
+    fx = 0;fy=0;fz=0;
+    N[0] = xyz_grid.shape[0]
+    N[1] = xyz_grid.shape[1]
+    N[2] = xyz_grid.shape[2]
+    for ri in rg:
+        for rj in rg:
+            for rk in rg:
+                if (ri==0 and rj==0 and rk==0):
+                    pass
+                else:
+                    i=ri;j=rj;k=rk;check=1;checki=1;checkj=1;checkk=1;
+                    
+                    if(x+ri<0 or x+ri>=N[0]):
+                        i=0;check=0;checki=0
+                    if(y+rj<0 or y+rj>=N[1]):
+                        j=0;check=0;checkj=0
+                    if(z+rk<0 or z+rk>=N[2]):
+                        k=0;check=0;checkk=0
+                    if(check==1 and latticeGrid[i, j, k]==1):
+                        #print(ri,rj,rk)
+                        #print(r(x,y,z,x+i,y+j,z+k))
+                        #pot += LJ(r(x,y,z,x+i,y+j,z+k))
+                        try:
+                            fx += forceLJ(r(x,y,z,x+i,y+j,z+k, xyz_grid),xyz_grid[i][j][k][0],xyz_grid[i+1][j][k][0])
+                            fy += forceLJ(r(x,y,z,x+i,y+j,z+k, xyz_grid),xyz_grid[i][j][k][1],xyz_grid[i][j+1][k][1])
+                            fz += forceLJ(r(x,y,z,x+i,y+j,z+k, xyz_grid),xyz_grid[i][j][k][2],xyz_grid[i][j][k+1][2])
+                        except Exception as e:
+                            print('Error at:',ri,rj,rk)
+                            print(e)
+                            print('------------------')
+                            quit()
+                        #print("LJ: ",LJ(r(x,y,z,x+i,y+j,z+k)))
+    #print("potential: ", pot)
+    #print("force along x: ", fx)
+    return np.array([fx,fy,fz])
+
 def r(x1, y1, z1, x2, y2, z2, xyz_grid):
-    return np.sqrt( (xyz_grid[x2][y2][z2][0]-xyz_grid[x1][y1][z1][0])**2 +  (xyz_grid[x2][y2][z2][1]-xyz_grid[x1][y1][z1][1])**2 + (xyz_grid[x2][y2][z2][2]-xyz_grid[x1][y1][z1][2])**2 )
+    return np.sqrt( (xyz_grid[x2][y2][z2][0]-xyz_grid[x1][y1][z1][0])**2 
+        + (xyz_grid[x2][y2][z2][1]-xyz_grid[x1][y1][z1][1])**2 
+        + (xyz_grid[x2][y2][z2][2]-xyz_grid[x1][y1][z1][2])**2 )
 
 def forceXLJ3(x, y, z, xyz_grid):#Force along x-axis
     rg = np.array([-1,0,1])
-    pot = 0
+    #pot = 0
     fx = 0
     for ri in rg:
         for rj in rg:
@@ -144,6 +186,7 @@ def forceZLJ3(x, y, z, xyz_grid):#Force along x-axis
     #print("potential: ", pot)
     #print("force along z: ", fz)
     return fz
+
 def numberOfAtoms(latticeGrid):
     c=0
     for i in range(latticeGrid[:,0,0].size):
