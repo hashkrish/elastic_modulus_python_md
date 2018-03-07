@@ -194,6 +194,24 @@ def forceZLJ3(x, y, z, xyz_grid):#Force along x-axis
     #print("force along z: ", fz)
     return fz
 
+def timeForceMeanAndTimeStress(force_grid, time_grid):
+    time_forceMean = np.zeros([N_steps, 3])
+    time_stress = np.zeros([N_steps, 3])
+    time_stress_applied = np.zeros([N_steps, 3])
+    fxMean = 0;fyMean = 0;fzMean = 0
+    for t in range(N_steps):
+        for i in range(N[0]):
+            for j in range(N[1]):
+                for k in range(N[2]):
+                    fxMean+=force_grid[t][i][j][k][0]
+                    fyMean+=force_grid[t][i][j][k][1]
+                    fzMean+=force_grid[t][i][j][k][2]
+        fxMean = fxMean/N[0];fyMean = fyMean/N[1];fzMean = fzMean/N[2];
+        time_stress[t] = np.array([fxMean/(N[1]*N[2]*ial**2), fyMean/(N[2]*N[0]*ial**2), fzMean/(N[1]*N[0]*ial**2)])*74
+        time_forceMean[t] = np.array([fxMean, fyMean, fzMean])
+        time_stress_applied[t,0] = np.array([Fa/( abs(time_grid[t,0,0,0,1] - time_grid[t,0,N[1]-1,0,1]) * abs(time_grid[t,0,0,0,2] - time_grid[t,0,0,N[2]-1,2]))])
+    return time_forceMean, time_stress, time_stress_applied
+
 def numberOfAtoms(latticeGrid):
     c=0
     for i in range(latticeGrid[:,0,0].size):
