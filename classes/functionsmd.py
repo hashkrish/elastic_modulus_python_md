@@ -26,9 +26,6 @@ def verlet_pos(pos, posPrevious, t, ts, acc):
 
 def verlet_posd(pos, t, ts, acc):
     pos_t_dt = 2*pos - pos*(t-ts) + (acc*ts**2); pos = pos_t_dt
-#    pos_t_plus_dt = pos + vel*ts + ( 0.5 * acc * ts**2 ); pos = pos_t_plus_dt
-#    pos_t_minus_dt = pos - vel*ts + ( 0.5 * acc * ts**2 ); pos = pos_t_minus_dt
-# the above given post_t_dt is found by adding above given two taylor equations
     return pos
 
 def verlet_acc(pos,t,ts,posPlusDt):
