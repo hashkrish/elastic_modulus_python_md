@@ -237,4 +237,102 @@ def writeXYZFile(latticeGrid, posGrid, name='None'):
                                 + str(posGrid[i, j, k, 2]) + ' ' 
                                 + '\n')
                     c += 1
-                    
+
+def TimeGridAndForceGrid(posGrid, latticeGrid):
+    #N = np.array(3)
+    N[0] = posGrid.shape[0]
+    N[1] = posGrid.shape[1]
+    N[2] = posGrid.shape[2]
+    time_grid = np.zeros([N_steps,N[0],N[1],N[2],3])
+    time_grid[0] = np.array([posGrid])
+
+    force_grid = np.zeros([N_steps, N[0], N[1], N[2],3])
+    for t in range(N_steps - 1):
+    #     file = open("dump/pos/timestep_"+str(t+1)+".xyz", "w")
+    #     file.write(str(numberOfAtoms(latticeGrid))+'\n')
+    #     file.write('\n')
+        for i in range(N[0]):
+            for j in range(N[1]):
+                for k in range(N[2]):
+                    if (latticeGrid[i, j, k] == 1):
+                        fx=0; fy=0; fz=0;acc=0
+                        fx = forceLJ3FCC(i, j, k, posGrid, latticeGrid)[0]
+                        fy = forceLJ3FCC(i, j, k, posGrid, latticeGrid)[1]
+                        fz = forceLJ3FCC(i, j, k, posGrid, latticeGrid)[2]
+                        #fx, fy, fz += forceLJ3(i, j, k, posGrid)
+                        acc = (fx/mass) + (force_grid[t, i, j, k , 0]/mass)
+                        if (t-1==-1):
+                            xj=verlet_pos(time_grid[t][i][j][k][0], time_grid[t][i][j][k][0], t,ts,acc)
+                            yj=verlet_pos(time_grid[t][i][j][k][1], time_grid[t][i][j][k][1], t, ts, 
+                                            fy/mass)
+                            zj=verlet_pos(time_grid[t][i][j][k][2], time_grid[t][i][j][k][2], t, ts, 
+                                            fz/mass)
+                        else:
+                            xj=verlet_pos(time_grid[t][i][j][k][0], time_grid[t-1][i][j][k][0], t,ts,acc)
+                            yj=verlet_pos(time_grid[t][i][j][k][1], time_grid[t-1][i][j][k][1], t, ts, 
+                                        fy/mass)
+                            zj=verlet_pos(time_grid[t][i][j][k][2], time_grid[t-1][i][j][k][2], t, ts, 
+                                        fz/mass)
+                        time_grid[t+1][i][j][k][0] = xj
+                        time_grid[t+1][i][j][k][1] = yj
+                        time_grid[t+1][i][j][k][2] = zj
+    #                     file.write('X '+str(xj)+' '+str(yj)+' '+str(zj)+'\n')
+                        force_grid[t][i][j][k][0] = fx;force_grid[t][i][j][k][1] = fy;force_grid[t][i][j][k][2] = fz
+    #     file.close()                     
+    return time_grid, force_grid
+
+def latticeMean3X(latticeGrid, grid):
+    
+    temp = np.zeros([latticeGrid.shape[1],latticeGrid.shape[2]])
+    for j in range(N[1]):
+        for k in range(N[2]):
+            if (latticeGrid[0,j,k]==1 or latticeGrid[N[0]-1,j,k]==1):
+                temp[j,k] = grid[j,k]
+    return np.mean(temp)
+
+def myStrain(time_grid, latticeGrid):
+    strain = np.zeros([N_steps,3])
+    for t in range(N_steps):
+        tempMat = np.zeros([N[1],N[2]])
+        for j in range(N[1]):
+            for k in range(N[2]):
+                try:
+                    tempMat[j,k] = abs(time_grid[t,0,j,k,0]-time_grid[t,N[0]-1,j,k,0])/abs(time_grid[0,0,j,k,0]-time_grid[0,N[0]-1,j,k,0])
+                except:
+                    print("error:",t,j,k)
+
+        strain[t,0] = latticeMean3X(latticeGrid, tempMat)
+    return strain
+
+def StrainXYZ(time_grid):
+    strainXYZ = np.zeros([N[0], N[1], N[2], 3])
+    time_strainXYZ = np.zeros([N_steps, N[0], N[1], N[2], 3])
+    time_strainXYZ[0] = strainXYZ
+    for t in range(N_steps):
+        if t==0:
+            pass #strainX[t] = 0
+        else:
+            strainXYZ = abs(time_grid[t]-time_grid[1])/ial
+            time_strainXYZ[t] = strainXYZ
+    return time_strainXYZ
+
+def timeStrainMean(time_grid, latticeGrid):
+    time_strainXYZ = StrainXYZ(time_grid)
+    no = numberOfAtoms(latticeGrid)
+    time_strainMean = np.zeros([N_steps, 3])
+    StrainX = 0;StrainY = 0;StrainZ = 0
+    for t in range(N_steps):
+        for i in range(N[0]):
+            for j in range(N[1]):
+                for k in range(N[2]):
+                    if(latticeGrid[i, j, k]==1):
+                        StrainX +=time_strainXYZ[t][i][j][k][0]
+                        StrainY +=time_strainXYZ[t][i][j][k][1]
+                        StrainZ +=time_strainXYZ[t][i][j][k][2]
+        StrainXMean = StrainX/no;StrainYMean = StrainY/no;StrainZMean = StrainZ/no;
+        time_strainMean[t] = np.array([StrainXMean, StrainYMean, StrainZMean])
+    return time_strainMean
+
+
+
+

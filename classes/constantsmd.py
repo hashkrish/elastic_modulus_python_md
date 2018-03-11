@@ -2,14 +2,15 @@
 import ast
 import numpy as np
 avagadro = 6.023e23
-ial = 4.04e-10 # 3.84e-10 #interatomic length
+ial = 4.04e-10  #interatomic length
 #ial = 3.84e-10 #interatomic length
+atmPr = 1.01325e5
 epsilon = 0.5 * 1.6e-19 #1.5 #dummy value
 sigma = 2.85e-10 #dummy value
 #vel = 0.1e-10 #velocity per step
 #acc = 1e-10 #acceleration
-ts = 0.005e-15 #timestep ex: 0.005 nano seconds as 0.005e-9
-N_steps = 10
+ts = 0.005e-12 #timestep ex: 0.005 nano seconds as 0.005e-9
+N_steps = 20
 
 
 def N_xyz_(Nx,Ny,Nz): 
