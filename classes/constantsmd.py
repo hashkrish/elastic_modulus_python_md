@@ -1,16 +1,16 @@
 #import configparser
 import ast
 import numpy as np
-avagadro = 6.023e23
+avogadro = 6.023e23
 ial = 4.04e-10  #interatomic length
 #ial = 3.84e-10 #interatomic length
 atmPr = 1.01325e5
 epsilon = 0.5 * 1.6e-19 #1.5 #dummy value
 sigma = 2.85e-10 #dummy value
-#vel = 0.1e-10 #velocity per step
+vel = 0#0.1e-10 #velocity per step
 #acc = 1e-10 #acceleration
-ts = 0.005e-12 #timestep ex: 0.005 nano seconds as 0.005e-9
-N_steps = 20
+ts = 0.5e-15 #timestep ex: 0.005 nano seconds as 0.005e-9
+N_steps = 6
 
 
 def N_xyz_(Nx,Ny,Nz): 
@@ -20,11 +20,11 @@ def N_xyz_(Nx,Ny,Nz):
 
 N = N_xyz_(3,3,3)
 
-Fa = 100e6 * (N[1]*N[2]*ial**2)
+Fa = 0#100e6 * (N[1]*N[2]*ial**2)
 
 
 
-mass = 26.982e-3/avagadro
+mass = 26.982e-3/avogadro
 FaByMass = Fa/mass
 
 

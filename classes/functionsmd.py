@@ -19,7 +19,7 @@ def LJ(r):
 
 def verlet_pos(pos, posPrevious, t, ts, acc):
     pos_t_dt = 2*pos - posPrevious + (acc*ts**2); pos = pos_t_dt
-#    pos_t_plus_dt = pos + vel*ts + ( 0.5 * acc * ts**2 ); pos = pos_t_plus_dt
+    # pos_t_plus_dt = pos + vel*ts + ( 0.5 * acc * ts**2 ); pos = pos_t_plus_dt
 #    pos_t_minus_dt = pos - vel*ts + ( 0.5 * acc * ts**2 ); pos = pos_t_minus_dt
 # the above given post_t_dt is found by adding above given two taylor equations
     return pos
@@ -33,8 +33,7 @@ def verlet_acc(pos,t,ts,posPlusDt):
 
 def forceLJ3(x, y, z, xyz_grid):#Force along x-axis
     rg = np.array([-1, 0 , 1])
-    pot = 0
-    fx = 0;fy=0;fz=0;
+    fx = 0;fy=0;fz=0
     for ri in rg:
         for rj in rg:
             for rk in rg:
@@ -56,10 +55,9 @@ def forceLJ3(x, y, z, xyz_grid):#Force along x-axis
                         fx += forceLJ(r(x,y,z,x+i,y+j,z+k, xyz_grid),xyz_grid[i][j][k][0],xyz_grid[i+1][j][k][0])
                         fy += forceLJ(r(x,y,z,x+i,y+j,z+k, xyz_grid),xyz_grid[i][j][k][1],xyz_grid[i][j+1][k][1])
                         fz += forceLJ(r(x,y,z,x+i,y+j,z+k, xyz_grid),xyz_grid[i][j][k][2],xyz_grid[i][j][k+1][2])
-
                         #print("LJ: ",LJ(r(x,y,z,x+i,y+j,z+k)))
     #print("potential: ", pot)
-    #print("force along x: ", fx)
+    # print("force along x: ", fx)
     return np.array([fx,fy,fz])
 
 def forceLJ3FCC(x, y, z, xyz_grid, latticeGrid):#Force along x-axis
@@ -247,7 +245,7 @@ def TimeGridAndForceGrid(posGrid, latticeGrid):
     time_grid[0] = np.array([posGrid])
 
     force_grid = np.zeros([N_steps, N[0], N[1], N[2],3])
-    for t in range(N_steps - 1):
+    for t in range(N_steps):
     #     file = open("dump/pos/timestep_"+str(t+1)+".xyz", "w")
     #     file.write(str(numberOfAtoms(latticeGrid))+'\n')
     #     file.write('\n')
@@ -267,15 +265,20 @@ def TimeGridAndForceGrid(posGrid, latticeGrid):
                                             fy/mass)
                             zj=verlet_pos(time_grid[t][i][j][k][2], time_grid[t][i][j][k][2], t, ts, 
                                             fz/mass)
+                            time_grid[t+1][i][j][k][0] = xj
+                            time_grid[t+1][i][j][k][1] = yj
+                            time_grid[t+1][i][j][k][2] = zj
+                        elif (t == N_steps-1):
+                            pass
                         else:
                             xj=verlet_pos(time_grid[t][i][j][k][0], time_grid[t-1][i][j][k][0], t,ts,acc)
                             yj=verlet_pos(time_grid[t][i][j][k][1], time_grid[t-1][i][j][k][1], t, ts, 
                                         fy/mass)
                             zj=verlet_pos(time_grid[t][i][j][k][2], time_grid[t-1][i][j][k][2], t, ts, 
                                         fz/mass)
-                        time_grid[t+1][i][j][k][0] = xj
-                        time_grid[t+1][i][j][k][1] = yj
-                        time_grid[t+1][i][j][k][2] = zj
+                            time_grid[t+1][i][j][k][0] = xj
+                            time_grid[t+1][i][j][k][1] = yj
+                            time_grid[t+1][i][j][k][2] = zj
     #                     file.write('X '+str(xj)+' '+str(yj)+' '+str(zj)+'\n')
                         force_grid[t][i][j][k][0] = fx;force_grid[t][i][j][k][1] = fy;force_grid[t][i][j][k][2] = fz
     #     file.close()                     
@@ -332,6 +335,49 @@ def timeStrainMean(time_grid, latticeGrid):
         StrainXMean = StrainX/no;StrainYMean = StrainY/no;StrainZMean = StrainZ/no;
         time_strainMean[t] = np.array([StrainXMean, StrainYMean, StrainZMean])
     return time_strainMean
+
+def bravais(nx, ny, nz, a, type='None', ax=0, ay=0, az=0):
+    if ax==0:
+        ax=a
+    if ay==0:
+        ay=a
+    if az==0:
+        az=a
+        
+    if type=='FCC':
+        a1 = np.array([0.0, 0.5, 0.5])*ax
+        a2 = np.array([0.5, 0.0, 0.5])*ay
+        a3 = np.array([0.5, 0.5, 0.0])*az
+    
+    if type=='SC':
+        a1 = np.array([1.0, 0.0, 0.0])*ax
+        a2 = np.array([0.0, 1.0, 0.0])*ay
+        a3 = np.array([0.0, 0.0, 1.0])*az
+    
+    if type == 'None':
+        print("\n------Descripe lattice structure------\n")
+        exit()
+
+    posGrid = np.zeros([nx, ny, nx, 3])
+    for i in range(nx):
+        n1 = list(range(nx//2, nx+nx//2))[i]
+        for j in range(ny):
+            n2 = list(range(ny//2, ny+ny//2))[j]
+            for k in range(nz):
+                n3 = list(range(nz//2, nz+nz//2))[k]
+                #R = i*a1 +  j*a2 + k*a3
+                R = n1*a1 + n2*a2 + n3*a3
+                posGrid[i, j, k] = R
+    return posGrid
+
+
+
+
+
+
+
+
+
 
 
 
