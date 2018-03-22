@@ -3,8 +3,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import random
 
-from classes.constantsmd import ial
-from classes.functionsmd import bravais, forceLJ3, forceLJ, r, plotPosGrid
+from classes.constantsmd import ial, N_steps
+from classes.functionsmd import ( bravais, forceLJ3, forceLJ, r, plotPosGrid,
+TimeGridAndForceGrid, StrainXYZ)
 from classes.gridmd import N_xyz
 from bravais import writeXYZFile, Force, defForce2D
 
@@ -14,9 +15,9 @@ def main():
     force = np.zeros([posGrid.shape[0], posGrid.shape[1], posGrid.shape[2], 3])
     force += defForce2D(force, X=100e3)
     force += Force(posGrid)
-    print(force)
+    # print(force)
+    time_grid, force_grid = TimeGridAndForceGrid(posGrid, np.ones([3,3,3]))
     print("----END----")
 
 if __name__ == '__main__':
     main()
-        
