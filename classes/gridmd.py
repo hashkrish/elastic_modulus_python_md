@@ -152,7 +152,14 @@ def makeLattice(brick, na1, na2, na3):
         xyznet = np.concatenate((xyznet, xynet[:, :, 1:]), axis=2)
     return xyznet
 
-def makeLatticePos(brick, na1, na2, na3, length):
+def makeLatticePos(brick, na1, na2, na3, ial, ialX=0, ialY=0, ialZ=0):
+    if ialX==0:
+        ialX=ial
+    if ialY==0:
+        ialY=ial
+    if ialZ==0:
+        ialZ==ial
+
     xnet = brick
     for i in range(na1-1):
         xnet = np.concatenate((xnet, brick[1:, :, :]), axis=0)
@@ -168,7 +175,7 @@ def makeLatticePos(brick, na1, na2, na3, length):
             for j in range(xyznet[0,:,0].size):
                 for k in range(xyznet[0, 0, :].size):
                     if(xyznet[i, j, k] == 1):
-                        xyzPosGrid[i, j, k] = np.array([length*i, length*j, length*k])
+                        xyzPosGrid[i, j, k] = np.array([ialX*i, ialY*j, ialZ*k])
     except:
         print("error at:",i,j,k)
         print(xyznet.shape)

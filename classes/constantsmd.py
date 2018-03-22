@@ -7,9 +7,9 @@ ial = 4.04e-10  #interatomic length
 atmPr = 1.01325e5
 epsilon = 0.5 * 1.6e-19 #1.5 #dummy value
 sigma = 2.85e-10 #dummy value
-vel = 0#0.1e-10 #velocity per step
+#vel = 0#0.1e-10 #velocity per step
 #acc = 1e-10 #acceleration
-ts = 0.5e-9 #timestep ex: 0.005 nano seconds as 0.005e-9
+ts = 0.001e-9 #timestep ex: 0.005 nano seconds as 0.005e-9
 N_steps = 10
 
 

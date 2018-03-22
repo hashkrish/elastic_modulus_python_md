@@ -198,9 +198,9 @@ def timeForceMeanAndTimeStress(force_grid, time_grid):
         for i in range(N[0]):
             for j in range(N[1]):
                 for k in range(N[2]):
-                    fxMean+=force_grid[t][i][j][k][0]
-                    fyMean+=force_grid[t][i][j][k][1]
-                    fzMean+=force_grid[t][i][j][k][2]
+                    fxMean+=force_grid[t, i, j, k, 0]
+                    fyMean+=force_grid[t, i, j, k, 1]
+                    fzMean+=force_grid[t, i, j, k, 2]
         fxMean = fxMean/N[0];fyMean = fyMean/N[1];fzMean = fzMean/N[2];
         time_stress[t] = np.array([fxMean/(N[1]*N[2]*ial**2), fyMean/(N[2]*N[0]*ial**2), fzMean/(N[1]*N[0]*ial**2)])*74
         time_forceMean[t] = np.array([fxMean, fyMean, fzMean])
@@ -260,10 +260,10 @@ def TimeGridAndForceGrid(posGrid, latticeGrid):
                         #fx, fy, fz += forceLJ3(i, j, k, posGrid)
                         acc = (fx/mass) + (force_grid[t, i, j, k , 0]/mass)
                         if (t-1==-1):
-                            xj=verlet_pos(time_grid[t][i][j][k][0], time_grid[t][i][j][k][0], t,ts,acc)
-                            yj=verlet_pos(time_grid[t][i][j][k][1], time_grid[t][i][j][k][1], t, ts, 
+                            xj=verlet_pos(time_grid[t, i, j, k, 0], time_grid[t, i, j, k, 0], t,ts,acc)
+                            yj=verlet_pos(time_grid[t, i, j, k, 1], time_grid[t, i, j, k, 1], t, ts, 
                                             fy/mass)
-                            zj=verlet_pos(time_grid[t][i][j][k][2], time_grid[t][i][j][k][2], t, ts, 
+                            zj=verlet_pos(time_grid[t, i, j, k, 2], time_grid[t, i, j, k, 2], t, ts, 
                                             fz/mass)
                             time_grid[t+1][i][j][k][0] = xj
                             time_grid[t+1][i][j][k][1] = yj
@@ -271,16 +271,16 @@ def TimeGridAndForceGrid(posGrid, latticeGrid):
                         elif (t == N_steps-1):
                             pass
                         else:
-                            xj=verlet_pos(time_grid[t][i][j][k][0], time_grid[t-1][i][j][k][0], t,ts,acc)
-                            yj=verlet_pos(time_grid[t][i][j][k][1], time_grid[t-1][i][j][k][1], t, ts, 
+                            xj=verlet_pos(time_grid[t, i, j, k, 0], time_grid[t-1][i][j][k][0], t,ts,acc)
+                            yj=verlet_pos(time_grid[t, i, j, k, 1], time_grid[t-1][i][j][k][1], t, ts, 
                                         fy/mass)
-                            zj=verlet_pos(time_grid[t][i][j][k][2], time_grid[t-1][i][j][k][2], t, ts, 
+                            zj=verlet_pos(time_grid[t, i, j, k, 2], time_grid[t-1][i][j][k][2], t, ts, 
                                         fz/mass)
                             time_grid[t+1][i][j][k][0] = xj
                             time_grid[t+1][i][j][k][1] = yj
                             time_grid[t+1][i][j][k][2] = zj
     #                     file.write('X '+str(xj)+' '+str(yj)+' '+str(zj)+'\n')
-                        force_grid[t][i][j][k][0] = fx;force_grid[t][i][j][k][1] = fy;force_grid[t][i][j][k][2] = fz
+                        force_grid[t, i, j, k, 0] = fx;force_grid[t, i, j, k, 1] = fy;force_grid[t, i, j, k, 2] = fz
     #     file.close()                     
     return time_grid, force_grid
 
@@ -329,9 +329,9 @@ def timeStrainMean(time_grid, latticeGrid):
             for j in range(N[1]):
                 for k in range(N[2]):
                     if(latticeGrid[i, j, k]==1):
-                        StrainX +=time_strainXYZ[t][i][j][k][0]
-                        StrainY +=time_strainXYZ[t][i][j][k][1]
-                        StrainZ +=time_strainXYZ[t][i][j][k][2]
+                        StrainX +=time_strainXYZ[t, i, j, k, 0]
+                        StrainY +=time_strainXYZ[t, i, j, k, 1]
+                        StrainZ +=time_strainXYZ[t, i, j, k, 2]
         StrainXMean = StrainX/no;StrainYMean = StrainY/no;StrainZMean = StrainZ/no;
         time_strainMean[t] = np.array([StrainXMean, StrainYMean, StrainZMean])
     return time_strainMean
@@ -370,8 +370,72 @@ def bravais(nx, ny, nz, a, type='None', ax=0, ay=0, az=0):
                 posGrid[i, j, k] = R
     return posGrid
 
+def ForceGrid(posGrid, latticeGrid):
+    #N = np.array(3)
+    N[0] = posGrid.shape[0]
+    N[1] = posGrid.shape[1]
+    N[2] = posGrid.shape[2]
+    
+    force_grid = np.zeros([N[0], N[1], N[2],3])
 
+    for i in range(N[0]):
+        for j in range(N[1]):
+            for k in range(N[2]):
+                if (latticeGrid[i, j, k] == 1):
+                    fx=0; fy=0; fz=0
+                    fx = forceLJ3FCC(i, j, k, posGrid, latticeGrid)[0]
+                    fy = forceLJ3FCC(i, j, k, posGrid, latticeGrid)[1]
+                    fz = forceLJ3FCC(i, j, k, posGrid, latticeGrid)[2]
+                    force_grid[i, j, k, 0] = fx
+                    force_grid[i, j, k, 1] = fy
+                    force_grid[i, j, k, 2] = fz
+    return force_grid
 
+def TimeForceGrid(time_grid, latticeGrid):
+    
+    time_force_grid = np.zeros(time_grid.shape)
+    time_grid_old = np.zeros(time_grid.shape)
+    for t in range(N_steps):
+
+        
+        print(t)
+        for itr in range(3):
+            for i in range(N[0]):
+                for j in range(N[1]):
+                    for k in range(N[2]):
+                        if (latticeGrid[i, j, k] == 1):
+                            fx=0; fy=0; fz=0
+                            posGrid = time_grid[t]
+                            fx = forceLJ3FCC(i, j, k, posGrid, latticeGrid)[0]
+                            fy = forceLJ3FCC(i, j, k, posGrid, latticeGrid)[1]
+                            fz = forceLJ3FCC(i, j, k, posGrid, latticeGrid)[2]
+                            acc = (fx/mass) + (ForceGrid(time_grid[t], latticeGrid)[i, j, k , 0]/mass)
+                            if (itr-1==-1):
+                                xj=verlet_pos(time_grid[t, i, j, k, 0], time_grid[t, i, j, k, 0], t,ts,acc)
+                                yj=verlet_pos(time_grid[t, i, j, k, 1], time_grid[t, i, j, k, 1], t, ts, 
+                                                fy/mass)
+                                zj=verlet_pos(time_grid[t, i, j, k, 2], time_grid[t, i, j, k, 2], t, ts, 
+                                                fz/mass)
+                                time_grid_old[t, i, j, k] = time_grid[t, i, j, k]
+                                time_grid[t, i, j, k, 0] = xj
+                                time_grid[t, i, j, k, 1] = yj
+                                time_grid[t, i, j, k, 2] = zj
+                            elif (t == N_steps-1):
+                                pass
+                            else:
+                                xj=verlet_pos(time_grid[t, i, j, k, 0], time_grid_old[t-1][i][j][k][0], t,ts,acc)
+                                yj=verlet_pos(time_grid[t, i, j, k, 1], time_grid_old[t-1][i][j][k][1], t, ts, 
+                                            fy/mass)
+                                zj=verlet_pos(time_grid[t, i, j, k, 2], time_grid_old[t-1][i][j][k][2], t, ts, 
+                                            fz/mass)
+                                time_grid_old[t, i, j, k] = time_grid[t, i, j, k]                                
+                                time_grid[t, i, j, k, 0] = xj
+                                time_grid[t, i, j, k, 1] = yj
+                                time_grid[t, i, j, k, 2] = zj
+        
+    
+        time_force_grid[t] = ForceGrid(time_grid[t], latticeGrid)
+    return time_force_grid
 
 
 
