@@ -420,8 +420,6 @@ def TimeForceGrid(time_grid, latticeGrid):
                                 time_grid[t, i, j, k, 0] = xj
                                 time_grid[t, i, j, k, 1] = yj
                                 time_grid[t, i, j, k, 2] = zj
-                            elif (t == N_steps-1):
-                                pass
                             else:
                                 xj=verlet_pos(time_grid[t, i, j, k, 0], time_grid_old[t-1][i][j][k][0], t,ts,acc)
                                 yj=verlet_pos(time_grid[t, i, j, k, 1], time_grid_old[t-1][i][j][k][1], t, ts, 

@@ -100,7 +100,7 @@ if(platform.system()=='Windows'):
     winsound.Beep(freq, duration)
 if(platform.system()=='Linux'):
     import os
-    os.system('spd-say "oooooooo"')
+    os.system('spd-say "your program is done"')
 
 
 # ## Program End
