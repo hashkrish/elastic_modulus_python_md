@@ -128,7 +128,7 @@ def plotStructure(mat):
     ax.set_zlabel('Z')
     plt.show()
 
-def plotPosGrid(mat):
+def plotPosGrid(mat, filename='plot'):
     fig0 = plt.figure()
     ax = fig0.add_subplot(111, projection='3d')
     for i in range(mat[:, 0, 0, 0].size):
@@ -138,6 +138,8 @@ def plotPosGrid(mat):
     ax.set_xlabel('X')
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
+    if filename!='plot':
+        plt.savefig(filename)
     plt.show()
 
 def makeLattice(brick, na1, na2, na3):
@@ -181,4 +183,20 @@ def makeLatticePos(brick, na1, na2, na3, ial, ialX=0, ialY=0, ialZ=0):
         print(xyznet.shape)
     return xyzPosGrid
 
-    
+def CustomPlotPosGrid(mat, filename='plot', point=None):
+    fig0 = plt.figure()
+    ax = fig0.add_subplot(111, projection='3d')
+    for i in range(mat[:, 0, 0, 0].size):
+        for j in range(mat[0, :, 0, 0].size):
+            for k in range(mat[0, 0, :, 0].size):
+                if point!=None:
+                    if (i==point[0] and j==point[1] and k==point[2]):
+                        ax.scatter(mat[i, j ,k, 0], mat[i, j ,k, 1], mat[i, j ,k, 2], c='r')
+                        continue
+                ax.scatter(mat[i, j ,k, 0], mat[i, j ,k, 1], mat[i, j ,k, 2], c='b')
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
+    if filename!='plot':
+        plt.savefig(filename)
+    plt.show()    

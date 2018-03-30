@@ -9,7 +9,7 @@ epsilon = 0.5 * 1.6e-19 #1.5 #dummy value
 sigma = 2.85e-10 #dummy value
 #vel = 0#0.1e-10 #velocity per step
 #acc = 1e-10 #acceleration
-ts = 0.001e-9 #timestep ex: 0.005 nano seconds as 0.005e-9
+ts = 0.001e-15 #timestep ex: 0.005 nano seconds as 0.005e-9
 N_steps = 10
 
 
@@ -18,9 +18,9 @@ def N_xyz_(Nx,Ny,Nz):
     return np.array([Nx,Ny,Nz])
 
 
-N = N_xyz_(3,3,3)
+N = N_xyz_(10,10,10)
 
-Fa = 0#100e6 * (N[1]*N[2]*ial**2)
+Fa = 100e6 * (N[1]*N[2]*ial**2)
 
 
 
