@@ -40,21 +40,21 @@ def forceLJ3(x, y, z, xyz_grid):#Force along x-axis
                 if (ri==0 and rj==0 and rk==0):
                     pass
                 else:
-                    i=ri;j=rj;k=rk;check=1;checki=1;checkj=1;checkk=1;
+                    i=ri;j=rj;k=rk;check=1
                     
                     if(x+ri<0 or x+ri>=N[0]):
-                        i=0;check=0;checki=0;
+                        i=0;check=0
                     if(y+rj<0 or y+rj>=N[1]):
-                        j=0;check=0;checkj=0;
+                        j=0;check=0
                     if(z+rk<0 or z+rk>=N[2]):
-                        k=0;check=0;checkk=0;
+                        k=0;check=0
                     if(check==1):
                         #print(ri,rj,rk)
                         #print(r(x,y,z,x+i,y+j,z+k))
                         #pot += LJ(r(x,y,z,x+i,y+j,z+k))
-                        fx += forceLJ(r(x,y,z,x+i,y+j,z+k, xyz_grid),xyz_grid[i][j][k][0],xyz_grid[i+1][j][k][0])
-                        fy += forceLJ(r(x,y,z,x+i,y+j,z+k, xyz_grid),xyz_grid[i][j][k][1],xyz_grid[i][j+1][k][1])
-                        fz += forceLJ(r(x,y,z,x+i,y+j,z+k, xyz_grid),xyz_grid[i][j][k][2],xyz_grid[i][j][k+1][2])
+                        fx = forceLJ(r(x,y,z,x+i,y+j,z+k, xyz_grid),xyz_grid[i][j][k][0],xyz_grid[i+1][j][k][0])
+                        fy = forceLJ(r(x,y,z,x+i,y+j,z+k, xyz_grid),xyz_grid[i][j][k][1],xyz_grid[i][j+1][k][1])
+                        fz = forceLJ(r(x,y,z,x+i,y+j,z+k, xyz_grid),xyz_grid[i][j][k][2],xyz_grid[i][j][k+1][2])
                         #print("LJ: ",LJ(r(x,y,z,x+i,y+j,z+k)))
     #print("potential: ", pot)
     # print("force along x: ", fx)
@@ -121,7 +121,7 @@ def forceLJ3FCC(x, y, z, xyz_grid, latticeGrid):#Force along x-axis
                             quit()
     #print("potential: ", pot)
     #print("force along x: ", fx)
-    return np.array([fx,fy,fz])
+    return fx,fy,fz
 
 def r(x1, y1, z1, x2, y2, z2, xyz_grid):
     return np.sqrt( (xyz_grid[x2][y2][z2][0]-xyz_grid[x1][y1][z1][0])**2 
@@ -277,9 +277,7 @@ def TimeGridAndForceGrid(posGrid, latticeGrid):
                 for k in range(N[2]):
                     if (latticeGrid[i, j, k] == 1):
                         fx=0; fy=0; fz=0;acc=0
-                        fx = forceLJ3FCC(i, j, k, posGrid, latticeGrid)[0]
-                        fy = forceLJ3FCC(i, j, k, posGrid, latticeGrid)[1]
-                        fz = forceLJ3FCC(i, j, k, posGrid, latticeGrid)[2]
+                        fx,fy,fz = forceLJ3FCC(i, j, k, posGrid, latticeGrid)
                         #fx, fy, fz += forceLJ3(i, j, k, posGrid)
                         acc = (fx/mass) + (force_grid[t, i, j, k , 0]/mass)
                         if (t-1==-1):
@@ -458,12 +456,89 @@ def TimeForceGrid(time_grid, latticeGrid):
         time_force_grid[t] = ForceGrid(time_grid[t], latticeGrid)
     return time_force_grid
 
+def GridPotential(posGrid):
+    pot = 0
+    for i in range(posGrid.shape[0]):
+        for j in range(posGrid.shape[1]):
+            for k in range(posGrid.shape[2]):
+                pot += potentialLJ3(i,j,k,posGrid)
+    return pot
 
+def MinimizeMD(posGrid, ts=0.01e-9, fixends=[]):
+    old = posGrid
+    randArray = np.random.rand(posGrid.shape[0],posGrid.shape[1],posGrid.shape[2],3)
+    new = posGrid + randArray*0.1e-10 - 0.5*np.ones(posGrid.shape)
+    FirstLoop = True
+    while(GridPotential(new) <= GridPotential(old) or FirstLoop):
+        if np.all(new==np.zeros(posGrid.shape)):
+            new = old
+        print('Total Potential Energy: '+str(GridPotential(new)))
+        try:
+            nxt = MakeNextPosition(old, new, ts, fixends=fixends)
+        except Exception as e:
+            print(e)
+        old = new
+        new = nxt
+        FirstLoop = False
+    return new
 
+def MakeNextPosition(old, new, ts, fixends=[], ItType='verlet'):
+    nxt = np.empty(old.shape, dtype=float)
+    xstart = 0; xend = old.shape[0]
+    ystart = 0; yend = old.shape[1]
+    zstart = 0; zend = old.shape[2]
+    if ('x' in fixends):
+        xstart = 1; xend = old.shape[0]-1
+    if ('y' in fixends):
+        ystart = 1; yend = old.shape[1]-1
+    if ('z' in fixends):
+        zstart = 1; zend = old.shape[2]-1
+    print('Fixends: ',fixends)
+    print(xstart, xend, ystart, yend, zstart, zend)
+    for i in range(xstart, xend):
+        for j in range(ystart, yend):
+            for k in range(zstart, zend):
+                force = forceLJ3(i,j,k, old)
+                if (ItType=='verlet'):
+                    nxt[i,j,k,0] = Verlet(new[i,j,k,0], old[i,j,k,0], force[0]/mass, ts)
+                    nxt[i,j,k,1] = Verlet(new[i,j,k,1], old[i,j,k,1], force[1]/mass, ts)
+                    nxt[i,j,k,2] = Verlet(new[i,j,k,2], old[i,j,k,2], force[2]/mass, ts)
+                if (ItType=='NR'):
+                    pot = potentialLJ3(i,j,k,old)
+                    forceAtom = forceLJ3(i,j,k, old)
+                    nxt[i,j,k,0] = NR(pot, forceAtom[0], old[i,j,k,0])
+                    nxt[i,j,k,1] = NR(pot, forceAtom[1], old[i,j,k,2])
+                    nxt[i,j,k,2] = NR(pot, forceAtom[2], old[i,j,k,2])
+                # print(i,j,k,end='\n')
+    return nxt
 
+def Verlet(new, old, acc, ts=0.01e-9):
+    nxt = 2*new - old + acc * ts**2
+    return nxt
 
+def MinimizeNR(posGrid, fixends=[], ItType='verlet'):
+    old = posGrid
+    randArray = np.random.rand(posGrid.shape[0],posGrid.shape[1],posGrid.shape[2],3)
+    new = posGrid# + randArray*0.1e-10 - 0.5*np.ones(posGrid.shape)
+    FirstLoop = True
+    
+    while(GridPotential(new) < GridPotential(old) or FirstLoop):
+        
+        print('Total Potential Energy: '+str(GridPotential(new)))
+        try:
+            nxt = MakeNextPosition(old, new, ts, fixends=fixends, ItType='NR')
+        except Exception as e:
+            print(e)
+        old = new
+        new = nxt
+        FirstLoop = False
+    return new
 
-
-
-
-
+def NR(f, dfdx, x0):
+    old = x0
+    new = old+1
+    while abs((old-new)/old)>0.01:
+        new = old - f/dfdx
+        old = new
+        new = old+1
+    return old
