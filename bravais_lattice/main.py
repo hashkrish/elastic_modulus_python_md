@@ -22,8 +22,8 @@ def main():
     # print('Number of atoms: '+str(N))
     # print('Force: '+str(forceLJ3(ai,aj,ak,posGrid)))
     # print('Potential: '+str(potentialLJ3(ai,aj,ak,posGrid)))
-    # Minimized = MinimizeMD(posGrid, ts=0.001e-15, fixends=['x'])
-    Minimized = MinimizeNR(posGrid, fixends=['x'], ItType='NR')
+    Minimized = MinimizeMD(posGrid, ts=0.001e-15, fixends=['x'])
+    # Minimized = MinimizeNR(posGrid, fixends=['x'], ItType='NR')
     # plotPosGrid(Minimized)
     writeXYZFile(Minimized, path='bravais_lattice/test.xyz', scale='Angstrom')
     try:
@@ -32,5 +32,5 @@ def main():
     except:
         pass
     
-    main()
 if __name__ == '__main__':
+    main()
